@@ -1,0 +1,71 @@
+var idCounter = 1000;
+var names = {};
+var tokens = {
+    LF: idCounter++,
+    EOF: idCounter++,
+    WHITESPACE: idCounter++,
+    INDENT: idCounter++,
+    UNINDENT: idCounter++,
+    WORD: idCounter++,
+    TEXT_START: idCounter++,
+    TEXT: idCounter++,
+    CLASS_START: idCounter++,
+    ID_START: idCounter++,
+    ATTR_START: idCounter++,
+    IDENTIFIER: idCounter++,
+    NULL_LITERAL: idCounter++,
+    BOOLEAN_LITERAL: idCounter++,
+    STRING_LITERAL: idCounter++,
+    NUMBER_LITERAL: idCounter++,
+    OP_LP: idCounter++,
+    OP_RP: idCounter++,
+    OP_LB: idCounter++,
+    OP_RB: idCounter++,
+    OP_DOT: idCounter++,
+    OP_COMMA: idCounter++,
+    OP_LT: idCounter++,
+    OP_GT: idCounter++,
+    OP_LTE: idCounter++,
+    OP_GTE: idCounter++,
+    OP_EQUALS: idCounter++,
+    OP_NOT_EQUALS: idCounter++,
+    OP_ADD: idCounter++,
+    OP_SUB: idCounter++,
+    OP_MUL: idCounter++,
+    OP_DIV: idCounter++,
+    OP_EXCESS: idCounter++,
+    OP_INC: idCounter++,
+    OP_DEC: idCounter++,
+    OP_LSHIFT: idCounter++,
+    OP_RSHIFT: idCounter++,
+    OP_UNSIGNED_RSHIFT: idCounter++,
+    OP_BINARY_AND: idCounter++,
+    OP_BINARY_OR: idCounter++,
+    OP_XOR: idCounter++,
+    OP_NOT: idCounter++,
+    OP_LOGICAL_AND: idCounter++,
+    OP_LOGICAL_OR: idCounter++,
+    OP_TERNARY_IF: idCounter++,
+    OP_TERNARY_ELSE: idCounter++,
+    OP_ASSIGN: idCounter++,
+    OP_ADD_ASSIGN: idCounter++,
+    OP_SUB_ASSIGN: idCounter++,
+    OP_MUL_ASSIGN: idCounter++,
+    OP_DIV_ASSIGN: idCounter++,
+    OP_EXCESS_ASSIGN: idCounter++,
+    OP_LSHIFT_ASSIGN: idCounter++,
+    OP_RSHIFT_ASSIGN: idCounter++,
+    OP_UNSIGNED_RSHIFT_ASSIGN: idCounter++,
+    OP_BINARY_AND_ASSIGN: idCounter++,
+    OP_BINARY_OR_ASSIGN: idCounter++,
+    OP_XOR_ASSIGN: idCounter++,
+
+    getName: function (id) {
+        return names[id];
+    }
+};
+Object.keys(tokens).forEach(function (name) {
+    names[tokens[name]] = name;
+});
+
+module.exports = tokens;

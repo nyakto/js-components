@@ -1,0 +1,20 @@
+{
+  "name": "js-components",
+  "version": "0.0.1",
+  "description": "js-components - object model for abstraction from DOM / HTML",
+  "author": "Stanislav Yashenkov <vampire@realtymag.ru>",
+  "license": "MIT",
+  "main": "",
+  "directories": {
+    "lib": "./lib"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha tests"
+  },
+  "keywords": [],
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^2.2.0",
+    "mocha": "=2.2.4"
+  }
+}
