@@ -1,6 +1,7 @@
 /* global describe, xdescribe, it */
 var Lexer = require('../lexer');
 var Parser = require('../parser');
+var tokens = require('../tokens');
 var ast = require('../ast');
 var expect = require('chai').expect;
 
@@ -32,6 +33,39 @@ describe("parser", function () {
     });
 
     describe("expressions", function () {
+        function operand(value) {
+            if (typeof value === 'string') {
+                return ast.createIdentifier(value);
+            } else if (typeof value !== 'object') {
+                return ast.createValue(value);
+            }
+            return value;
+        }
+
+        function op(type, a, b, c) {
+            if (typeof c === 'undefined') {
+                if (typeof b === 'undefined') {
+                    return ast.createUnaryOperator(
+                        type,
+                        operand(a)
+                    );
+                } else {
+                    return ast.createBinaryOperator(
+                        type,
+                        operand(a),
+                        operand(b)
+                    );
+                }
+            } else {
+                return ast.createTernaryOperator(
+                    type,
+                    operand(a),
+                    operand(b),
+                    operand(c)
+                );
+            }
+        }
+
         it("literals", function () {
             expect(parser.expression(new Lexer('"qwe"'))).to.be.eql(
                 ast.createExpression(ast.createValue("qwe"))
@@ -55,6 +89,24 @@ describe("parser", function () {
 
             expect(parser.expression(new Lexer("null"))).to.be.eql(
                 ast.createExpression(ast.createValue(null))
+            );
+        });
+
+        it("binary operators", function () {
+            expect(parser.expression(new Lexer("a + b"))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_ADD,
+                    'a',
+                    'b'
+                ))
+            );
+
+            expect(parser.expression(new Lexer("(a + b) * (c - d)"))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_MUL,
+                    op(tokens.OP_ADD, 'a', 'b'),
+                    op(tokens.OP_SUB, 'c', 'd')
+                ))
             );
         });
     });
