@@ -203,4 +203,11 @@ Parser.prototype.tagInlineContent = function (lexer, tag) {
 Parser.prototype.tagContent = function (lexer, tag) {
 };
 
+/**
+ * @param {Lexer} lexer
+ * @returns {ExpressionStatement}
+ */
+Parser.prototype.expression = function (lexer) {
+};
+
 module.exports = Parser;
