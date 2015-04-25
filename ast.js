@@ -227,10 +227,11 @@ module.exports = {
     },
 
     /**
+     * @param {*} value
      * @returns {Value}
      */
-    createNullLiteral: function () {
-        return new Value(null);
+    createValue: function (value) {
+        return new Value(value);
     },
 
     /**
