@@ -60,6 +60,18 @@ TagStatement.prototype.addContent = function (statement) {
 
 /**
  * @constructor
+ * @property {string} name
+ * @property {ExpressionStatement} value
+ * @param {string} name
+ * @param {ExpressionStatement} value
+ */
+function Attribute(name, value) {
+    this.name = typeof name !== 'undefined' ? String(name) : null;
+    this.value = typeof value !== 'undefined' ? value : null;
+}
+
+/**
+ * @constructor
  * @extends Statement
  * @property {string} text
  * @param {string} [text='']
@@ -99,5 +111,14 @@ module.exports = {
      */
     createExpression: function () {
         return new ExpressionStatement();
+    },
+
+    /**
+     * @param {string} name
+     * @param {ExpressionStatement} value
+     * @returns {Attribute}
+     */
+    createAttribute: function (name, value) {
+        return new Attribute(name, value);
     }
 };
