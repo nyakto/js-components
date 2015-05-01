@@ -108,6 +108,30 @@ describe("parser", function () {
                     op(tokens.OP_SUB, 'c', 'd')
                 ))
             );
+
+            expect(parser.expression(new Lexer("info.text"))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_DOT,
+                    ast.createIdentifier('info'),
+                    ast.createIdentifier('text')
+                ))
+            );
+
+            expect(parser.expression(new Lexer("info[name + id].text"))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_DOT,
+                    op(
+                        tokens.OP_LB,
+                        ast.createIdentifier('info'),
+                        op(
+                            tokens.OP_ADD,
+                            ast.createIdentifier('name'),
+                            ast.createIdentifier('id')
+                        )
+                    ),
+                    ast.createIdentifier('text')
+                ))
+            );
         });
     });
 });
