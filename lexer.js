@@ -159,6 +159,10 @@ Lexer.prototype.next = function () {
     var token = getToken.call(this);
     if (this._mode === Lexer.DEFAULT_MODE) {
         token = processIndents.call(this, token);
+    } else if (this._mode === Lexer.EXPR_MODE) {
+        if (token.id === tokens.WHITESPACE) {
+            token = this.next();
+        }
     }
     return token;
 };
