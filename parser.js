@@ -204,10 +204,105 @@ Parser.prototype.tagContent = function (lexer, tag) {
 };
 
 /**
+ * expression: expr;
  * @param {Lexer} lexer
  * @returns {ExpressionStatement}
  */
 Parser.prototype.expression = function (lexer) {
+    lexer.setMode(Lexer.EXPR_MODE);
+    var expr = ast.createExpression(
+        this.expr(lexer)
+    );
+    lexer.setMode(Lexer.DEFAULT_MODE);
+    return expr;
+};
+
+/**
+ * expr: operand expr_tail;
+ * @param {Lexer} lexer
+ * @returns {Operand}
+ */
+Parser.prototype.expr = function (lexer) {
+    var reversePolishNotation = ast.createReversePolishNotation();
+    reversePolishNotation.addValue(this.operand(lexer));
+    var token = lexer.peek();
+    if (tokens.isBinaryOperator(token.id) || token.id === tokens.OP_LB) {
+        this.exprTail(lexer, reversePolishNotation);
+    }
+    return reversePolishNotation.convert();
+};
+
+/**
+ * expr_tail: <empty>;
+ * expr_tail: OP_LB expr OP_RB expr_tail;
+ * expr_tail: binary_operator operand expr_tail;
+ * @param {Lexer} lexer
+ * @param {ReversePolishNotation} reversePolishNotation
+ */
+Parser.prototype.exprTail = function (lexer, reversePolishNotation) {
+    var token = lexer.peek();
+    while (true) {
+        if (tokens.isBinaryOperator(token.id)) {
+            lexer.next();
+            reversePolishNotation.addOperator(token);
+            reversePolishNotation.addValue(
+                this.operand(lexer)
+            );
+        } else if (token.id === tokens.OP_LB) {
+            lexer.next();
+            reversePolishNotation.addOperator(token);
+            reversePolishNotation.addValue(
+                this.expr(lexer)
+            );
+            token = lexer.next();
+            if (token.id !== tokens.OP_RB) {
+                throw new Error();
+            }
+        } else {
+            return;
+        }
+        token = lexer.peek();
+    }
+};
+
+/**
+ * operand: OP_LP expr OP_RP;
+ * operand: IDENTIFIER;
+ * operand: NULL_LITERAL;
+ * operand: BOOLEAN_LITERAL;
+ * operand: STRING_LITERAL;
+ * operand: NUMBER_LITERAL;
+ * @param {Lexer} lexer
+ * @returns {Operand}
+ */
+Parser.prototype.operand = function (lexer) {
+    var token = lexer.peek();
+    switch (token.id) {
+        case tokens.IDENTIFIER:
+            lexer.next();
+            return ast.createIdentifier(token.text);
+        case tokens.NULL_LITERAL:
+            lexer.next();
+            return ast.createValue(null);
+        case tokens.BOOLEAN_LITERAL:
+            lexer.next();
+            return ast.createBooleanLiteral(token.text);
+        case tokens.STRING_LITERAL:
+            lexer.next();
+            return ast.createStringLiteral(token.text);
+        case tokens.NUMBER_LITERAL:
+            lexer.next();
+            return ast.createNumberLiteral(token.text);
+        case tokens.OP_LP:
+            lexer.next();
+            var result = this.expr(lexer);
+            token = lexer.next();
+            if (token.id !== tokens.OP_RP) {
+                throw new Error();
+            }
+            return result;
+    }
+    throw new Error();
 };
 
 module.exports = Parser;

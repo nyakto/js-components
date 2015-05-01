@@ -1,4 +1,5 @@
 var util = require('util');
+var tokens = require('./tokens');
 
 /**
  * @constructor
@@ -177,6 +178,59 @@ ExpressionStatement.prototype.setValue = function (value) {
     return this;
 };
 
+/**
+ * @constructor
+ */
+function ReversePolishNotation() {
+    this._stack = [];
+    this._result = [];
+}
+
+ReversePolishNotation.prototype.addValue = function (value) {
+    this._result.push(value);
+};
+
+ReversePolishNotation.prototype.addOperator = function (token) {
+    token.priority = tokens.getOperatorPriority(token.id);
+    if (tokens.isRightAssociative(token.id)) {
+        while (this._stack.length && this._stack[this._stack.length - 1].priority > token.priority) {
+            this._result.push(this._stack.pop());
+        }
+    } else {
+        while (this._stack.length && this._stack[this._stack.length - 1].priority >= token.priority) {
+            this._result.push(this._stack.pop());
+        }
+    }
+    this._stack.push(token);
+};
+
+/**
+ * @returns {Operand}
+ */
+ReversePolishNotation.prototype.convert = function () {
+    while (this._stack.length) {
+        this._result.push(this._stack.pop());
+    }
+    var stack = [];
+    this._result.forEach(function (value) {
+        if (value.priority) {
+            if (stack.length < 2) {
+                throw new Error();
+            }
+            var b = stack.pop();
+            var a = stack.pop();
+            stack.push(new BinaryOperator(value.id, a, b));
+        } else {
+            stack.push(value);
+        }
+    });
+    if (stack.length !== 1) {
+        throw new Error();
+    }
+    this._result = stack;
+    return stack[0];
+};
+
 module.exports = {
     /**
      * @param {string} [tagName='div']
@@ -207,7 +261,7 @@ module.exports = {
      * @returns {Value}
      */
     createStringLiteral: function (value) {
-        return new Value(eval('return ' + value));
+        return new Value(eval(value));
     },
 
     /**
@@ -270,6 +324,13 @@ module.exports = {
      */
     createExpression: function (value) {
         return new ExpressionStatement(value);
+    },
+
+    /**
+     * @returns {ReversePolishNotation}
+     */
+    createReversePolishNotation: function () {
+        return new ReversePolishNotation();
     },
 
     /**
