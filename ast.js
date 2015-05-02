@@ -70,6 +70,40 @@ TagStatement.prototype.addContent = function (statement) {
 };
 
 /**
+ * @class ConditionalContent
+ * @property {ExpressionStatement} condition
+ * @property {Statement[]} content
+ */
+/**
+ * @constructor
+ * @property {ConditionalContent[]} conditions
+ * @property {Statement[]} elseContent
+ */
+function IfStatement() {
+    this.conditions = [];
+    this.elseContent = [];
+}
+
+/**
+ * @param {ExpressionStatement} condition
+ * @param {Statement[]} content
+ */
+IfStatement.prototype.addConditionalContent = function (condition, content) {
+    this.conditions.push({
+        condition: condition,
+        content: content
+    });
+    return this;
+};
+
+/**
+ * @param {Statement[]} content
+ */
+IfStatement.prototype.setElseContent = function (content) {
+    this.elseContent = content;
+};
+
+/**
  * @constructor
  * @property {string} name
  * @property {ExpressionStatement} value
@@ -256,6 +290,13 @@ module.exports = {
      */
     createText: function (text) {
         return new TextStatement(text);
+    },
+
+    /**
+     * @returns {IfStatement}
+     */
+    createIf: function () {
+        return new IfStatement();
     },
 
     /**
