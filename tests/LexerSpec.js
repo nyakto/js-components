@@ -56,6 +56,16 @@ describe("lexer", function () {
         expectEOF(lexer.next());
     });
 
+    it("supports EXPR_START tokens", function () {
+        lexer = new Lexer('= a + b');
+        expectToken(lexer.next(), tokens.EXPR_START, '=');
+        lexer.setMode(Lexer.EXPR_MODE);
+        expectToken(lexer.next(), tokens.IDENTIFIER, 'a');
+        expectToken(lexer.next(), tokens.OP_ADD, '+');
+        expectToken(lexer.next(), tokens.IDENTIFIER, 'b');
+        expectEOF(lexer.next());
+    });
+
     it("supports LF, INDENT and UNINDENT tokens", function () {
         lexer = new Lexer("textarea\t  \t\r\n\r\t\n");
         expectWord(lexer.next(), 'textarea');
