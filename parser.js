@@ -77,6 +77,8 @@ Parser.prototype.statement = function (lexer) {
         case tokens.CLASS_START:
         case tokens.ID_START:
             return this.tagStatement(lexer);
+        case tokens.TEXT_START:
+            return this.textStatement(lexer);
     }
     throw new Error();
 };
@@ -108,6 +110,7 @@ Parser.prototype.textStatement = function (lexer) {
     if (!token) {
         throw new Error();
     }
+    lexer.setMode(Lexer.DEFAULT_MODE);
     consume(lexer, tokens.LF);
     return ast.createText(token.text);
 };
