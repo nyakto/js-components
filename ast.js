@@ -76,6 +76,7 @@ TagStatement.prototype.addContent = function (statement) {
  */
 /**
  * @constructor
+ * @extends {Statement}
  * @property {ConditionalContent[]} conditions
  * @property {Statement[]} elseContent
  */
