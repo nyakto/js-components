@@ -77,7 +77,7 @@ Parser.prototype.template = function (lexer) {
  * statement: text_statement;
  * statement: expr_statement;
  * TODO statement: component_statement;
- * TODO statement: each_statement;
+ * statement: each_statement;
  * statement: if_statement;
  * @param {Lexer} lexer
  * @returns {Statement}
@@ -91,6 +91,8 @@ Parser.prototype.statement = function (lexer) {
                     return this.ifStatement(lexer);
                 case 'else':
                     throw new Error();
+                case 'each':
+                    return this.eachStatement(lexer);
             }
             return this.tagStatement(lexer);
         case tokens.CLASS_START:
@@ -146,6 +148,49 @@ Parser.prototype.expressionStatement = function (lexer) {
     }
     var result = this.expression(lexer);
     consume(lexer, tokens.LF);
+    return result;
+};
+
+/**
+ * each_statement: WORD[each] WHITESPACE WORD WHITESPACE WORD[in] expression LF? inner_content;
+ * each_statement: WORD[each] WHITESPACE WORD WHITESPACE? OP_COMMA, WHITESPACE? WORD WHITESPACE WORD[in] expression LF? inner_content;
+ * @param {Lexer} lexer
+ * @returns {EachStatement}
+ */
+Parser.prototype.eachStatement = function (lexer) {
+    var result = ast.createEach();
+    if (!consumeWord(lexer, 'each')) {
+        throw new Error();
+    }
+    consume(lexer, tokens.WHITESPACE);
+    var keyOrValue = consume(lexer, tokens.WORD);
+    if (!keyOrValue) {
+        throw new Error();
+    }
+    consume(lexer, tokens.WHITESPACE);
+    if (consume(lexer, tokens.OP_COMMA)) {
+        consume(lexer, tokens.WHITESPACE);
+        var valueName = consume(lexer, tokens.WORD);
+        if (!valueName) {
+            throw new Error();
+        }
+        consume(lexer, tokens.WHITESPACE);
+        result.setKeyName(keyOrValue.text);
+        result.setValueName(valueName.text);
+    } else {
+        result.setValueName(keyOrValue.text);
+    }
+    if (!consumeWord(lexer, 'in')) {
+        throw new Error();
+    }
+    result.setExpression(
+        this.expression(lexer)
+    );
+    if (consume(lexer, tokens.LF)) {
+        result.setContent(
+            this.innerContent(lexer)
+        );
+    }
     return result;
 };
 
