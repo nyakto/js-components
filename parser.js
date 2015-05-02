@@ -247,6 +247,7 @@ Parser.prototype.attributesList = function (lexer, tag) {
 };
 
 /**
+ * // TODO: conditional attributes (@checked(isChecked))
  * attribute: ATTR_START WORD optional_attribute_value LF?;
  * optional_attribute_value: <empty>;
  * optional_attribute_value: WHITESPACE expression;
