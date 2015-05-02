@@ -103,6 +103,17 @@ describe("parser", function () {
                         ast.createText('else text')
                     ])
             ]);
+
+            expect(parser.template(new Lexer('if abc\nelse if def\nelse'))).to.be.eql([
+                ast.createIf()
+                    .addConditionalContent(ast.createExpression(
+                        ast.createIdentifier('abc')
+                    ), [])
+                    .addConditionalContent(ast.createExpression(
+                        ast.createIdentifier('def')
+                    ), [])
+                    .setElseContent([])
+            ]);
         });
     });
 
