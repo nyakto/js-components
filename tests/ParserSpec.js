@@ -109,6 +109,23 @@ describe("parser", function () {
                             ])
                     )
             ]);
+
+            expect(parser.template(new Lexer('each key, value in items\n\t.key= key\n\t.value= value'))).to.be.eql([
+                ast.createEach()
+                    .setKeyName('key')
+                    .setValueName('value')
+                    .setExpression(ast.createExpression(ast.createIdentifier('items')))
+                    .setContent([
+                        ast.createTag()
+                            .addClass('key')
+                            .addContent(ast.createExpression(ast.createIdentifier('key'))
+                        ),
+                        ast.createTag()
+                            .addClass('value')
+                            .addContent(ast.createExpression(ast.createIdentifier('value'))
+                        )
+                    ])
+            ]);
         });
 
         it("supports if / else statements", function () {
