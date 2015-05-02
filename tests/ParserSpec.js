@@ -85,6 +85,25 @@ describe("parser", function () {
                     ))
             ]);
         });
+
+        it("supports if / else statements", function () {
+            expect(parser.template(new Lexer('if abc\n\t|abc text\nelse if def\n\t|def text\nelse\n\t|else text'))).to.be.eql([
+                ast.createIf()
+                    .addConditionalContent(ast.createExpression(
+                        ast.createIdentifier('abc')
+                    ), [
+                        ast.createText('abc text')
+                    ])
+                    .addConditionalContent(ast.createExpression(
+                        ast.createIdentifier('def')
+                    ), [
+                        ast.createText('def text')
+                    ])
+                    .setElseContent([
+                        ast.createText('else text')
+                    ])
+            ]);
+        });
     });
 
     describe("expressions", function () {
