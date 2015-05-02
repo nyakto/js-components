@@ -13,12 +13,14 @@ function Statement() {
  * @property {string} tagName
  * @property {Object.<string, (boolean|ExpressionStatement)>} classes className -> expression
  * @property {string} id
+ * @property {Attribute[]} attributes
  * @property {Statement[]} content
  */
 function TagStatement(tagName) {
     this.tagName = typeof tagName !== 'undefined' ? tagName : 'div';
     this.classes = {};
     this.id = null;
+    this.attributes = [];
     this.content = [];
 }
 util.inherits(TagStatement, Statement);
@@ -47,6 +49,14 @@ TagStatement.prototype.addClass = function (className) {
  */
 TagStatement.prototype.setId = function (id) {
     this.id = id;
+    return this;
+};
+
+/**
+ * @param {Attribute} attribute
+ */
+TagStatement.prototype.addAttribute = function (attribute) {
+    this.attributes.push(attribute);
     return this;
 };
 

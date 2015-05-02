@@ -28,6 +28,20 @@ var ast = require('./ast');
 // TODO: для полей компонента должны генерироваться getter / setter (this.setValue('qwe asd'), this.getValue()) + универсальный ( this.set('value', 'qwe asd'), this.get('value'))
 // TODO: поддержка "тем оформления"
 
+/**
+ * @param {Lexer} lexer
+ * @param {number} id
+ * @returns {boolean}
+ */
+function consume(lexer, id) {
+    var token = lexer.peek();
+    if (token.id === id) {
+        lexer.next();
+        return true;
+    }
+    return false;
+}
+
 function Parser() {
 }
 
@@ -40,7 +54,7 @@ function Parser() {
 Parser.prototype.template = function (lexer) {
     var statements = [];
     var token = lexer.peek();
-    while (token.id !== tokens.EOF) {
+    while (token.id !== tokens.EOF && token.id !== tokens.UNINDENT) {
         statements.push(this.statement(lexer));
         token = lexer.peek();
     }
@@ -48,7 +62,7 @@ Parser.prototype.template = function (lexer) {
 };
 
 /**
- * TODO statement: tag_statement;
+ * statement: tag_statement;
  * TODO statement: text_statement;
  * TODO statement: expr_statement;
  * TODO statement: component_statement;
@@ -76,7 +90,9 @@ Parser.prototype.tagStatement = function (lexer) {
     var tag = ast.createTag();
     this.tagDeclaration(lexer, tag);
     this.tagInlineContent(lexer, tag);
-    this.tagContent(lexer, tag);
+    if (consume(lexer, tokens.LF)) {
+        this.tagContent(lexer, tag);
+    }
     return tag;
 };
 
@@ -196,11 +212,69 @@ Parser.prototype.tagInlineContent = function (lexer, tag) {
 };
 
 /**
- * // TODO
+ * tag_content: <empty>;
+ * tag_content: INDENT attributes_list template UNINDENT;
  * @param {Lexer} lexer
  * @param {TagStatement} tag
  */
 Parser.prototype.tagContent = function (lexer, tag) {
+    var token = lexer.peek();
+    if (token.id === tokens.INDENT) {
+        lexer.next();
+        this.attributesList(lexer, tag);
+        this.template(lexer).forEach(function (statement) {
+            tag.addContent(statement);
+        });
+        token = lexer.next();
+        if (token.id !== tokens.UNINDENT) {
+            throw new Error();
+        }
+    }
+};
+
+/**
+ * attributes_list: <empty>;
+ * attributes_list: attribute attributes_list;
+ * @param {Lexer} lexer
+ * @param {TagStatement} tag
+ */
+Parser.prototype.attributesList = function (lexer, tag) {
+    var token = lexer.peek();
+    while (token.id === tokens.ATTR_START) {
+        tag.addAttribute(this.attribute(lexer));
+        token = lexer.peek();
+    }
+};
+
+/**
+ * attribute: ATTR_START WORD optional_attribute_value LF?;
+ * optional_attribute_value: <empty>;
+ * optional_attribute_value: WHITESPACE expression;
+ * @param {Lexer} lexer
+ * @returns {Attribute}
+ */
+Parser.prototype.attribute = function (lexer) {
+    var token = lexer.next();
+    if (token.id !== tokens.ATTR_START) {
+        throw new Error();
+    }
+    token = lexer.next();
+    if (token.id !== tokens.WORD) {
+        throw new Error();
+    }
+    var name = token.text;
+    var value;
+    token = lexer.peek();
+    if (token.id === tokens.WHITESPACE) {
+        lexer.next();
+        value = this.expression(lexer);
+    } else {
+        value = ast.createExpression(
+            ast.createValue(true)
+        );
+    }
+    consume(lexer, tokens.LF);
+    return ast.createAttribute(name, value);
 };
 
 /**
