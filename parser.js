@@ -97,6 +97,13 @@ Parser.prototype.tagStatement = function (lexer) {
 };
 
 /**
+ * text_statement: TEXT_START TEXT LF?;
+ * @param lexer
+ */
+Parser.prototype.textStatement = function (lexer) {
+};
+
+/**
  * tag_decl: WORD tag_optional_description;
  * tag_decl: (=> CLASS_START) tag_optional_description;
  * tag_decl: (=> ID_START) tag_optional_description;

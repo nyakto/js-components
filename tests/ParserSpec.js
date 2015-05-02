@@ -28,6 +28,12 @@ describe("parser", function () {
             );
         });
 
+        it("text statements", function () {
+            expect(parser.textStatement(new Lexer('|some text'))).to.be.eql(
+                ast.createText('some text')
+            );
+        });
+
         it("supports attributes", function () {
             expect(parser.template(new Lexer('input\n\t@type "checkbox"\n\t@checked'))).to.be.eql([
                 ast.createTag('input')
