@@ -32,6 +32,11 @@ describe("parser", function () {
             expect(parser.textStatement(new Lexer('|some text'))).to.be.eql(
                 ast.createText('some text')
             );
+
+            expect(parser.tagStatement(new Lexer('textarea\n|some text'))).to.be.eql(
+                ast.createTag('textarea')
+                    .addContent(ast.createText('some text'))
+            );
         });
 
         it("supports attributes", function () {
