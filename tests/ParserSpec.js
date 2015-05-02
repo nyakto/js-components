@@ -33,7 +33,7 @@ describe("parser", function () {
                 ast.createText('some text')
             );
 
-            expect(parser.tagStatement(new Lexer('textarea\n|\tsome text'))).to.be.eql(
+            expect(parser.tagStatement(new Lexer('textarea\n\t|some text'))).to.be.eql(
                 ast.createTag('textarea')
                     .addContent(ast.createText('some text'))
             );
