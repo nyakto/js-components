@@ -41,6 +41,18 @@ function consume(lexer, id) {
     return false;
 }
 
+/**
+ * @param {Lexer} lexer
+ * @param {string} word
+ */
+function consumeWord(lexer, word) {
+    var token = lexer.peek();
+    if (token.id === tokens.WORD && token.text === word) {
+        return lexer.next();
+    }
+    return false;
+}
+
 function Parser() {
 }
 
@@ -66,7 +78,7 @@ Parser.prototype.template = function (lexer) {
  * statement: expr_statement;
  * TODO statement: component_statement;
  * TODO statement: each_statement;
- * TODO statement: if_statement;
+ * statement: if_statement;
  * @param {Lexer} lexer
  * @returns {Statement}
  */
@@ -74,6 +86,13 @@ Parser.prototype.statement = function (lexer) {
     var token = lexer.peek();
     switch (token.id) {
         case tokens.WORD:
+            switch (token.text) {
+                case 'if':
+                    return this.ifStatement(lexer);
+                case 'else':
+                    throw new Error();
+            }
+            return this.tagStatement(lexer);
         case tokens.CLASS_START:
         case tokens.ID_START:
             return this.tagStatement(lexer);
@@ -118,7 +137,7 @@ Parser.prototype.textStatement = function (lexer) {
 };
 
 /**
- * expr_statement: EXPR_START {expr} expression {default} LF?;
+ * expr_statement: EXPR_START expression LF?;
  * @param {Lexer} lexer
  */
 Parser.prototype.expressionStatement = function (lexer) {
@@ -128,6 +147,85 @@ Parser.prototype.expressionStatement = function (lexer) {
     var result = this.expression(lexer);
     consume(lexer, tokens.LF);
     return result;
+};
+
+/**
+ * if_statement: WORD[if] expression LF? inner_content if_statement_tail;
+ * @param {Lexer} lexer
+ * @returns {IfStatement}
+ */
+Parser.prototype.ifStatement = function (lexer) {
+    var result = ast.createIf();
+    if (!consumeWord(lexer, 'if')) {
+        throw new Error();
+    }
+    var condition = this.expression(lexer);
+    if (consume(lexer, tokens.LF)) {
+        var content = this.innerContent(lexer);
+        result.addConditionalContent(condition, content);
+        this.ifStatementTail(lexer, result);
+    } else {
+        result.addConditionalContent(condition, []);
+    }
+    return result;
+};
+
+/**
+ * inner_content: <empty>;
+ * inner_content: INDENT template UNINDENT;
+ * @param {Lexer} lexer
+ * @returns {Statement[]}
+ */
+Parser.prototype.innerContent = function (lexer) {
+    var result = [];
+    if (consume(lexer, tokens.INDENT)) {
+        result = this.template(lexer);
+        if(!consume(lexer, tokens.UNINDENT)) {
+            throw new Error();
+        }
+    }
+    return result;
+};
+
+/**
+ * if_statement_tail: <empty>;
+ * if_statement_tail: WORD[else] WHITESPACE WORD[if] expression LF? inner_content if_statement_tail;
+ * if_statement_tail: WORD[else] LF? inner_content;
+ * @param {Lexer} lexer
+ * @param {IfStatement} ifStatement
+ */
+Parser.prototype.ifStatementTail = function (lexer, ifStatement) {
+    var elseIf, condition, content;
+    while (consumeWord(lexer, 'else')) {
+        lexer.pushState();
+        elseIf = false;
+        try {
+            if (consume(lexer, tokens.WHITESPACE)) {
+                elseIf = consumeWord(lexer, 'if');
+            }
+        } catch (ignored) {
+        }
+        lexer.popState();
+        if (elseIf) {
+            consume(lexer, tokens.WHITESPACE);
+            consumeWord(lexer, 'if');
+            condition = this.expression(lexer);
+            if (consume(lexer, tokens.LF)) {
+                content = this.innerContent(lexer);
+                ifStatement.addConditionalContent(condition, content);
+            } else {
+                ifStatement.addConditionalContent(condition, []);
+                return;
+            }
+        } else {
+            if (consume(lexer, tokens.LF)) {
+                ifStatement.setElseContent(
+                    this.innerContent(lexer)
+                );
+            }
+            return;
+        }
+    }
 };
 
 /**
@@ -216,7 +314,7 @@ Parser.prototype.tagOptionalId = function (lexer, tag) {
  * // tag_inline_content: <empty>;
  * // tag_inline_content: WHITESPACE {expect_text} TEXT {default};
  * // tag_inline_content: WHITESPACE {expect_text} TEXT_START {text} TEXT {default};
- * // tag_inline_content: EXPR_START {expr} expression {default};
+ * // tag_inline_content: EXPR_START expression;
  * @param {Lexer} lexer
  * @param {TagStatement} tag
  */
@@ -317,7 +415,7 @@ Parser.prototype.attribute = function (lexer) {
 };
 
 /**
- * expression: expr;
+ * expression: {expr} expr {default};
  * @param {Lexer} lexer
  * @returns {ExpressionStatement}
  */
