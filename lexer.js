@@ -16,6 +16,7 @@ function Lexer(text) {
     this._indentHistory = [];
     this._line = 1;
     this._ready = [];
+    this._state = [];
 }
 
 Lexer.DEFAULT_MODE = 1;
@@ -166,6 +167,33 @@ Lexer.prototype.next = function () {
         }
     }
     return token;
+};
+
+Lexer.prototype.pushState = function () {
+    this._state.push({
+        mode: this._mode,
+        re: this._re,
+        tokenTypes: this._tokenTypes,
+        pos: this._pos,
+        startLine: this._startLine,
+        indent: this._indent,
+        indentHistory: JSON.parse(JSON.stringify(this._indentHistory)),
+        line: this._line,
+        ready: JSON.parse(JSON.stringify(this._ready))
+    });
+};
+
+Lexer.prototype.popState = function () {
+    var state = this._state.pop();
+    this._mode = state.mode;
+    this._re = state.re;
+    this._tokenTypes = state.tokenTypes;
+    this._pos = state.pos;
+    this._startLine = state.startLine;
+    this._indent = state.indent;
+    this._indentHistory = state.indentHistory;
+    this._line = state.line;
+    this._ready = state.ready;
 };
 
 /**
