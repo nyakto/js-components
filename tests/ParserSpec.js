@@ -63,6 +63,28 @@ describe("parser", function () {
                     ))
             ]);
         });
+
+        it("supports expressions", function () {
+            expect(parser.template(new Lexer('.class-a= a + b\n\t|some text\n\t= c - d'))).to.be.eql([
+                ast.createTag()
+                    .addClass('class-a')
+                    .addContent(ast.createExpression(
+                        ast.createBinaryOperator(
+                            tokens.OP_ADD,
+                            ast.createIdentifier('a'),
+                            ast.createIdentifier('b')
+                        )
+                    ))
+                    .addContent(ast.createText('some text'))
+                    .addContent(ast.createExpression(
+                        ast.createBinaryOperator(
+                            tokens.OP_SUB,
+                            ast.createIdentifier('c'),
+                            ast.createIdentifier('d')
+                        )
+                    ))
+            ]);
+        });
     });
 
     describe("expressions", function () {

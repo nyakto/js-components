@@ -11,6 +11,7 @@ var tokens = {
     UNINDENT: idCounter++,
     WORD: idCounter++,
     TEXT_START: idCounter++,
+    EXPR_START: idCounter++,
     TEXT: idCounter++,
     CLASS_START: idCounter++,
     ID_START: idCounter++,

@@ -62,8 +62,8 @@ Parser.prototype.template = function (lexer) {
 
 /**
  * statement: tag_statement;
- * TODO statement: text_statement;
- * TODO statement: expr_statement;
+ * statement: text_statement;
+ * statement: expr_statement;
  * TODO statement: component_statement;
  * TODO statement: each_statement;
  * TODO statement: if_statement;
@@ -79,6 +79,8 @@ Parser.prototype.statement = function (lexer) {
             return this.tagStatement(lexer);
         case tokens.TEXT_START:
             return this.textStatement(lexer);
+        case tokens.EXPR_START:
+            return this.expressionStatement(lexer);
     }
     throw new Error();
 };
@@ -98,7 +100,7 @@ Parser.prototype.tagStatement = function (lexer) {
 };
 
 /**
- * text_statement: TEXT_START TEXT LF?;
+ * text_statement: TEXT_START {text} TEXT {default} LF?;
  * @param {Lexer} lexer
  */
 Parser.prototype.textStatement = function (lexer) {
@@ -113,6 +115,19 @@ Parser.prototype.textStatement = function (lexer) {
     lexer.setMode(Lexer.DEFAULT_MODE);
     consume(lexer, tokens.LF);
     return ast.createText(token.text);
+};
+
+/**
+ * expr_statement: EXPR_START {expr} expression {default} LF?;
+ * @param {Lexer} lexer
+ */
+Parser.prototype.expressionStatement = function (lexer) {
+    if (!consume(lexer, tokens.EXPR_START)) {
+        throw new Error();
+    }
+    var result = this.expression(lexer);
+    consume(lexer, tokens.LF);
+    return result;
 };
 
 /**
@@ -201,6 +216,7 @@ Parser.prototype.tagOptionalId = function (lexer, tag) {
  * // tag_inline_content: <empty>;
  * // tag_inline_content: WHITESPACE {expect_text} TEXT {default};
  * // tag_inline_content: WHITESPACE {expect_text} TEXT_START {text} TEXT {default};
+ * // tag_inline_content: EXPR_START {expr} expression {default};
  * @param {Lexer} lexer
  * @param {TagStatement} tag
  */
@@ -227,6 +243,9 @@ Parser.prototype.tagInlineContent = function (lexer, tag) {
             default:
                 throw new Error();
         }
+    } else if (token.id === tokens.EXPR_START) {
+        lexer.next();
+        tag.addContent(this.expression(lexer));
     }
 };
 
