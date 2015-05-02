@@ -103,6 +103,7 @@ IfStatement.prototype.addConditionalContent = function (condition, content) {
  */
 IfStatement.prototype.setElseContent = function (content) {
     this.elseContent = content;
+    return this;
 };
 
 /**
