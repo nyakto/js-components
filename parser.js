@@ -137,7 +137,7 @@ Parser.prototype.textStatement = function (lexer) {
 };
 
 /**
- * expr_statement: EXPR_START {expr} expression {default} LF?;
+ * expr_statement: EXPR_START expression LF?;
  * @param {Lexer} lexer
  */
 Parser.prototype.expressionStatement = function (lexer) {
@@ -150,7 +150,7 @@ Parser.prototype.expressionStatement = function (lexer) {
 };
 
 /**
- * if_statement: WORD[if] {expr} expression {default} LF? inner_content if_statement_tail;
+ * if_statement: WORD[if] expression LF? inner_content if_statement_tail;
  * @param {Lexer} lexer
  * @returns {IfStatement}
  */
@@ -189,7 +189,7 @@ Parser.prototype.innerContent = function (lexer) {
 
 /**
  * if_statement_tail: <empty>;
- * if_statement_tail: WORD[else] WHITESPACE WORD[if] {expr} expression {default} LF? inner_content if_statement_tail;
+ * if_statement_tail: WORD[else] WHITESPACE WORD[if] expression LF? inner_content if_statement_tail;
  * if_statement_tail: WORD[else] LF? inner_content;
  * @param {Lexer} lexer
  * @param {IfStatement} ifStatement
@@ -314,7 +314,7 @@ Parser.prototype.tagOptionalId = function (lexer, tag) {
  * // tag_inline_content: <empty>;
  * // tag_inline_content: WHITESPACE {expect_text} TEXT {default};
  * // tag_inline_content: WHITESPACE {expect_text} TEXT_START {text} TEXT {default};
- * // tag_inline_content: EXPR_START {expr} expression {default};
+ * // tag_inline_content: EXPR_START expression;
  * @param {Lexer} lexer
  * @param {TagStatement} tag
  */
@@ -415,7 +415,7 @@ Parser.prototype.attribute = function (lexer) {
 };
 
 /**
- * expression: expr;
+ * expression: {expr} expr {default};
  * @param {Lexer} lexer
  * @returns {ExpressionStatement}
  */
