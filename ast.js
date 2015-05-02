@@ -154,6 +154,7 @@ EachStatement.prototype.setExpression = function (expression) {
  * @returns {EachStatement}
  */
 EachStatement.prototype.setContent = function (content) {
+    this.content = content;
     return this;
 };
 
