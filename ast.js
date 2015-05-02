@@ -336,6 +336,13 @@ module.exports = {
     },
 
     /**
+     * @returns {EachStatement}
+     */
+    createEach: function () {
+        return new EachStatement();
+    },
+
+    /**
      * @returns {IfStatement}
      */
     createIf: function () {
