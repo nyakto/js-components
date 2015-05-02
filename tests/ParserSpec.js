@@ -86,6 +86,48 @@ describe("parser", function () {
             ]);
         });
 
+        it("supports each statement", function () {
+            expect(parser.template(new Lexer('.items-list\n\teach item in items\n\t\t.item= item.name'))).to.be.eql([
+                ast.createTag()
+                    .addClass('items-list')
+                    .addContent(
+                        ast.createEach()
+                            .setValueName('item')
+                            .setExpression(ast.createExpression(ast.createIdentifier('items')))
+                            .setContent([
+                                ast.createTag()
+                                    .addClass('item')
+                                    .addContent(
+                                        ast.createExpression(
+                                            ast.createBinaryOperator(
+                                                tokens.OP_DOT,
+                                                ast.createIdentifier('item'),
+                                                ast.createIdentifier('name')
+                                            )
+                                        )
+                                    )
+                            ])
+                    )
+            ]);
+
+            expect(parser.template(new Lexer('each key, value in items\n\t.key= key\n\t.value= value'))).to.be.eql([
+                ast.createEach()
+                    .setKeyName('key')
+                    .setValueName('value')
+                    .setExpression(ast.createExpression(ast.createIdentifier('items')))
+                    .setContent([
+                        ast.createTag()
+                            .addClass('key')
+                            .addContent(ast.createExpression(ast.createIdentifier('key'))
+                        ),
+                        ast.createTag()
+                            .addClass('value')
+                            .addContent(ast.createExpression(ast.createIdentifier('value'))
+                        )
+                    ])
+            ]);
+        });
+
         it("supports if / else statements", function () {
             expect(parser.template(new Lexer('if abc\n\t|abc text\nelse if def\n\t|def text\nelse\n\t|else text'))).to.be.eql([
                 ast.createIf()

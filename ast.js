@@ -109,6 +109,57 @@ IfStatement.prototype.setElseContent = function (content) {
 
 /**
  * @constructor
+ * @extends {Statement}
+ * @property {string} keyName
+ * @property {string} valueName
+ * @property {ExpressionStatement} expression
+ * @property {Statement[]} content
+ */
+function EachStatement() {
+    this.keyName = null;
+    this.valueName = null;
+    this.expression = null;
+    this.content = [];
+}
+
+/**
+ * @param {string} keyName
+ * @returns {EachStatement}
+ */
+EachStatement.prototype.setKeyName = function (keyName) {
+    this.keyName = keyName;
+    return this;
+};
+
+/**
+ * @param {string} valueName
+ * @returns {EachStatement}
+ */
+EachStatement.prototype.setValueName = function (valueName) {
+    this.valueName = valueName;
+    return this;
+};
+
+/**
+ * @param {ExpressionStatement} expression
+ * @returns {EachStatement}
+ */
+EachStatement.prototype.setExpression = function (expression) {
+    this.expression = expression;
+    return this;
+};
+
+/**
+ * @param {Statement[]} content
+ * @returns {EachStatement}
+ */
+EachStatement.prototype.setContent = function (content) {
+    this.content = content;
+    return this;
+};
+
+/**
+ * @constructor
  * @property {string} name
  * @property {ExpressionStatement} value
  * @param {string} name
@@ -294,6 +345,13 @@ module.exports = {
      */
     createText: function (text) {
         return new TextStatement(text);
+    },
+
+    /**
+     * @returns {EachStatement}
+     */
+    createEach: function () {
+        return new EachStatement();
     },
 
     /**
