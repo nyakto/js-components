@@ -31,13 +31,12 @@ var ast = require('./ast');
 /**
  * @param {Lexer} lexer
  * @param {number} id
- * @returns {boolean}
+ * @returns {boolean|object}
  */
 function consume(lexer, id) {
     var token = lexer.peek();
     if (token.id === id) {
-        lexer.next();
-        return true;
+        return lexer.next();
     }
     return false;
 }
@@ -78,6 +77,8 @@ Parser.prototype.statement = function (lexer) {
         case tokens.CLASS_START:
         case tokens.ID_START:
             return this.tagStatement(lexer);
+        case tokens.TEXT_START:
+            return this.textStatement(lexer);
     }
     throw new Error();
 };
@@ -94,6 +95,24 @@ Parser.prototype.tagStatement = function (lexer) {
         this.tagContent(lexer, tag);
     }
     return tag;
+};
+
+/**
+ * text_statement: TEXT_START TEXT LF?;
+ * @param {Lexer} lexer
+ */
+Parser.prototype.textStatement = function (lexer) {
+    if (!consume(lexer, tokens.TEXT_START)) {
+        throw new Error();
+    }
+    lexer.setMode(Lexer.TEXT_MODE);
+    var token = consume(lexer, tokens.TEXT);
+    if (!token) {
+        throw new Error();
+    }
+    lexer.setMode(Lexer.DEFAULT_MODE);
+    consume(lexer, tokens.LF);
+    return ast.createText(token.text);
 };
 
 /**

@@ -28,6 +28,24 @@ describe("parser", function () {
             );
         });
 
+        it("text statements", function () {
+            expect(parser.textStatement(new Lexer('|some text'))).to.be.eql(
+                ast.createText('some text')
+            );
+
+            expect(parser.tagStatement(new Lexer('textarea\n\t|some text'))).to.be.eql(
+                ast.createTag('textarea')
+                    .addContent(ast.createText('some text'))
+            );
+
+            expect(parser.template(new Lexer('|text a\ndiv text b\n|text c'))).to.be.eql([
+                ast.createText('text a'),
+                ast.createTag('div')
+                    .addContent(ast.createText('text b')),
+                ast.createText('text c')
+            ]);
+        });
+
         it("supports attributes", function () {
             expect(parser.template(new Lexer('input\n\t@type "checkbox"\n\t@checked'))).to.be.eql([
                 ast.createTag('input')

@@ -65,14 +65,15 @@ Lexer.WrongIndentError = function (text, pos, line, expectedIndent, actualIndent
 util.inherits(Lexer.WrongIndentError, Lexer.LexerError);
 Lexer.LexerError.prototype.name = 'WrongIndentError';
 
-var defaultModeRE = /([ \t]*\r?\n|\r)|([ \t]+)|([a-z0-9]+(?:[:_-]*[a-z0-9]+)*)|(\.)|(#)|(@)/gi;
+var defaultModeRE = /([ \t]*\r?\n|\r)|([ \t]+)|([a-z0-9]+(?:[:_-]*[a-z0-9]+)*)|(\.)|(#)|(@)|(\|)/gi;
 var defaultModeTokenTypes = [
     tokens.LF,
     tokens.WHITESPACE,
     tokens.WORD,
     tokens.CLASS_START,
     tokens.ID_START,
-    tokens.ATTR_START
+    tokens.ATTR_START,
+    tokens.TEXT_START
 ];
 
 var expectTextModeRE = /(\|)|([^\r\n]*)/gi;
