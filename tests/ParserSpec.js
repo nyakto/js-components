@@ -29,6 +29,21 @@ describe("parser", function () {
         });
 
         it("supports attributes", function () {
+            expect(parser.template(new Lexer('input\n\t@type "checkbox"\n\t@checked'))).to.be.eql([
+                ast.createTag('input')
+                    .addAttribute(ast.createAttribute(
+                        'type',
+                        ast.createExpression(
+                            ast.createValue('checkbox')
+                        )
+                    ))
+                    .addAttribute(ast.createAttribute(
+                        'checked',
+                        ast.createExpression(
+                            ast.createValue(true)
+                        )
+                    ))
+            ]);
         });
     });
 

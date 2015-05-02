@@ -86,9 +86,10 @@ var textModeTokenTypes = [
     tokens.TEXT
 ];
 
-var exprModeRE = /([ \t]+)|("(?:\\[^\r\n]|[^"])*"|'(?:\\[^\r\n]|[^'])*')|(null)|(true|false)|([$a-zA-Z_][$a-zA-Z0-9_]*)|(\d+)|(\()|(\))|(\[)|(])|(\.)|(,)|(==)|(!=)|(=)|(\+=)|(-=)|(\*=)|(\/=)|(%=)|(<<=)|(>>>=)|(>>=)|(&=)|(\|=)|(\^=)|(\+\+)|(--)|(\+)|(-)|(\*)|(\/)|(%)|(<<)|(>>>)|(>>)|(&&)|(\|\|)|(&)|(\|)|(\^)|(!)|(\?)|(:)|(<=)|(>=)|(<)|(>)/g;
+var exprModeRE = /([ \t]+)|([ \t]*\r?\n|\r)|("(?:\\[^\r\n]|[^"])*"|'(?:\\[^\r\n]|[^'])*')|(null)|(true|false)|([$a-zA-Z_][$a-zA-Z0-9_]*)|(\d+)|(\()|(\))|(\[)|(])|(\.)|(,)|(==)|(!=)|(=)|(\+=)|(-=)|(\*=)|(\/=)|(%=)|(<<=)|(>>>=)|(>>=)|(&=)|(\|=)|(\^=)|(\+\+)|(--)|(\+)|(-)|(\*)|(\/)|(%)|(<<)|(>>>)|(>>)|(&&)|(\|\|)|(&)|(\|)|(\^)|(!)|(\?)|(:)|(<=)|(>=)|(<)|(>)/g;
 var exprModeTokenTypes = [
     tokens.WHITESPACE,
+    tokens.LF,
     tokens.STRING_LITERAL,
     tokens.NULL_LITERAL,
     tokens.BOOLEAN_LITERAL,
@@ -156,10 +157,8 @@ Lexer.prototype.next = function () {
             id: tokens.EOF
         });
     }
-    var token = getToken.call(this);
-    if (this._mode === Lexer.DEFAULT_MODE) {
-        token = processIndents.call(this, token);
-    } else if (this._mode === Lexer.EXPR_MODE) {
+    var token = processIndents.call(this, getToken.call(this));
+    if (this._mode === Lexer.EXPR_MODE) {
         if (token.id === tokens.WHITESPACE) {
             token = this.next();
         }
