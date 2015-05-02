@@ -87,6 +87,7 @@ function IfStatement() {
 /**
  * @param {ExpressionStatement} condition
  * @param {Statement[]} content
+ * @returns {IfStatement}
  */
 IfStatement.prototype.addConditionalContent = function (condition, content) {
     this.conditions.push({
@@ -98,6 +99,7 @@ IfStatement.prototype.addConditionalContent = function (condition, content) {
 
 /**
  * @param {Statement[]} content
+ * @returns {IfStatement}
  */
 IfStatement.prototype.setElseContent = function (content) {
     this.elseContent = content;
