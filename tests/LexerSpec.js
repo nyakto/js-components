@@ -48,6 +48,12 @@ describe("lexer", function () {
         lexer.setMode(Lexer.TEXT_MODE);
         expectText(lexer.next(), '|some text');
         expectEOF(lexer.next());
+
+        lexer = new Lexer('|some text');
+        expectToken(lexer.next(), tokens.TEXT_START, '|');
+        lexer.setMode(Lexer.TEXT_MODE);
+        expectText(lexer.next(), 'some text');
+        expectEOF(lexer.next());
     });
 
     it("supports LF, INDENT and UNINDENT tokens", function () {
