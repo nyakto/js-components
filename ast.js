@@ -112,11 +112,13 @@ IfStatement.prototype.setElseContent = function (content) {
  * @extends {Statement}
  * @property {string} keyName
  * @property {string} valueName
+ * @property {ExpressionStatement} expression
  * @property {Statement[]} content
  */
 function EachStatement() {
     this.keyName = null;
     this.valueName = null;
+    this.expression = null;
     this.content = [];
 }
 
@@ -135,6 +137,15 @@ EachStatement.prototype.setKeyName = function (keyName) {
  */
 EachStatement.prototype.setValueName = function (valueName) {
     this.valueName = valueName;
+    return this;
+};
+
+/**
+ * @param {ExpressionStatement} expression
+ * @returns {EachStatement}
+ */
+EachStatement.prototype.setExpression = function (expression) {
+    this.expression = expression;
     return this;
 };
 
