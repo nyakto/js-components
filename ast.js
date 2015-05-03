@@ -36,7 +36,7 @@ TagStatement.prototype.setTagName = function (tagName) {
 
 /**
  * @param {string} className
- * @param {ExpressionStatement} [condition]
+ * @param {ExpressionStatement|boolean} [condition]
  * @returns {TagStatement}
  */
 TagStatement.prototype.addClass = function (className, condition) {
