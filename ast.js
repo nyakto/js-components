@@ -289,8 +289,13 @@ ReversePolishNotation.prototype.addValue = function (value) {
     this._result.push(value);
 };
 
-ReversePolishNotation.prototype.addOperator = function (token) {
+/**
+ * @param {object} token
+ * @param {boolean} [unary=false]
+ */
+ReversePolishNotation.prototype.addOperator = function (token, unary) {
     token.priority = tokens.getOperatorPriority(token.id);
+    token.unary = Boolean(unary);
     if (tokens.isRightAssociative(token.id)) {
         while (this._stack.length && this._stack[this._stack.length - 1].priority > token.priority) {
             this._result.push(this._stack.pop());
@@ -313,12 +318,19 @@ ReversePolishNotation.prototype.convert = function () {
     var stack = [];
     this._result.forEach(function (value) {
         if (value.priority) {
-            if (stack.length < 2) {
-                throw new Error();
+            if (value.unary) {
+                if (stack.length < 1) {
+                    throw new Error();
+                }
+                stack.push(new UnaryOperator(value.id, stack.pop()));
+            } else {
+                if (stack.length < 2) {
+                    throw new Error();
+                }
+                var b = stack.pop();
+                var a = stack.pop();
+                stack.push(new BinaryOperator(value.id, a, b));
             }
-            var b = stack.pop();
-            var a = stack.pop();
-            stack.push(new BinaryOperator(value.id, a, b));
         } else {
             stack.push(value);
         }

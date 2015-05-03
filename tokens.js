@@ -143,6 +143,11 @@ priority[tokens.OP_XOR_ASSIGN] = 3;
 
 priority[tokens.OP_COMMA] = 0;
 
+rightAssoc[tokens.OP_NOT] = true;
+rightAssoc[tokens.OP_UNARY_PLUS] = true;
+rightAssoc[tokens.OP_UNARY_MINUS] = true;
+rightAssoc[tokens.OP_INC_AND_GET] = true;
+rightAssoc[tokens.OP_DEC_AND_GET] = true;
 rightAssoc[tokens.OP_ASSIGN] = true;
 rightAssoc[tokens.OP_ADD_ASSIGN] = true;
 rightAssoc[tokens.OP_SUB_ASSIGN] = true;
