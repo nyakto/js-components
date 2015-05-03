@@ -77,7 +77,7 @@ describe("parser", function () {
         });
 
         it("supports event bindings", function () {
-            expect(parser.template(new Lexer('input\n@on:change(value) trigger("valueChanged", value)'))).to.be.eql([
+            expect(parser.template(new Lexer('input\n\t@on:change(value) trigger("valueChanged", value)'))).to.be.eql([
                 ast.createTag('input')
                     .addEventBinding(ast.createEventBinding(
                         'change',
