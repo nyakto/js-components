@@ -40,6 +40,10 @@ var tokens = {
     OP_EXCESS: idCounter++,
     OP_INC: idCounter++,
     OP_DEC: idCounter++,
+    OP_INC_AND_GET: idCounter++,
+    OP_DEC_AND_GET: idCounter++,
+    OP_GET_AND_INC: idCounter++,
+    OP_GET_AND_DEC: idCounter++,
     OP_LSHIFT: idCounter++,
     OP_RSHIFT: idCounter++,
     OP_UNSIGNED_RSHIFT: idCounter++,
@@ -47,6 +51,8 @@ var tokens = {
     OP_BINARY_OR: idCounter++,
     OP_XOR: idCounter++,
     OP_NOT: idCounter++,
+    OP_UNARY_PLUS: idCounter++,
+    OP_UNARY_MINUS: idCounter++,
     OP_LOGICAL_AND: idCounter++,
     OP_LOGICAL_OR: idCounter++,
     OP_TERNARY_IF: idCounter++,
@@ -86,6 +92,13 @@ Object.keys(tokens).forEach(function (name) {
 
 priority[tokens.OP_DOT] = 18;
 priority[tokens.OP_LB] = 18;
+
+priority[tokens.OP_GET_AND_INC] = 16;
+priority[tokens.OP_GET_AND_DEC] = 16;
+
+priority[tokens.OP_NOT] = 15;
+priority[tokens.OP_INC_AND_GET] = 15;
+priority[tokens.OP_DEC_AND_GET] = 15;
 
 priority[tokens.OP_MUL] = 14;
 priority[tokens.OP_DIV] = 14;
@@ -130,6 +143,11 @@ priority[tokens.OP_XOR_ASSIGN] = 3;
 
 priority[tokens.OP_COMMA] = 0;
 
+rightAssoc[tokens.OP_NOT] = true;
+rightAssoc[tokens.OP_UNARY_PLUS] = true;
+rightAssoc[tokens.OP_UNARY_MINUS] = true;
+rightAssoc[tokens.OP_INC_AND_GET] = true;
+rightAssoc[tokens.OP_DEC_AND_GET] = true;
 rightAssoc[tokens.OP_ASSIGN] = true;
 rightAssoc[tokens.OP_ADD_ASSIGN] = true;
 rightAssoc[tokens.OP_SUB_ASSIGN] = true;

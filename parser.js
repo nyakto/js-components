@@ -480,8 +480,19 @@ Parser.prototype.expression = function (lexer) {
  */
 Parser.prototype.expr = function (lexer) {
     var reversePolishNotation = ast.createReversePolishNotation();
-    reversePolishNotation.addValue(this.operand(lexer));
+    this.operand(lexer, reversePolishNotation);
     var token = lexer.peek();
+    if (token.id === tokens.OP_INC) {
+        lexer.next();
+        token.id = tokens.OP_GET_AND_INC;
+        reversePolishNotation.addOperator(token, true);
+        token = lexer.peek();
+    } else if (token.id === tokens.OP_DEC) {
+        lexer.next();
+        token.id = tokens.OP_GET_AND_DEC;
+        reversePolishNotation.addOperator(token, true);
+        token = lexer.peek();
+    }
     if (tokens.isBinaryOperator(token.id) || token.id === tokens.OP_LB) {
         this.exprTail(lexer, reversePolishNotation);
     }
@@ -501,9 +512,7 @@ Parser.prototype.exprTail = function (lexer, reversePolishNotation) {
         if (tokens.isBinaryOperator(token.id)) {
             lexer.next();
             reversePolishNotation.addOperator(token);
-            reversePolishNotation.addValue(
-                this.operand(lexer)
-            );
+            this.operand(lexer, reversePolishNotation);
         } else if (token.id === tokens.OP_LB) {
             lexer.next();
             reversePolishNotation.addOperator(token);
@@ -528,37 +537,69 @@ Parser.prototype.exprTail = function (lexer, reversePolishNotation) {
  * operand: BOOLEAN_LITERAL;
  * operand: STRING_LITERAL;
  * operand: NUMBER_LITERAL;
+ * operand: OP_NOT operand;
  * @param {Lexer} lexer
- * @returns {Operand}
+ * @param {ReversePolishNotation} reversePolishNotation
  */
-Parser.prototype.operand = function (lexer) {
-    var token = lexer.peek();
-    switch (token.id) {
-        case tokens.IDENTIFIER:
-            lexer.next();
-            return ast.createIdentifier(token.text);
-        case tokens.NULL_LITERAL:
-            lexer.next();
-            return ast.createValue(null);
-        case tokens.BOOLEAN_LITERAL:
-            lexer.next();
-            return ast.createBooleanLiteral(token.text);
-        case tokens.STRING_LITERAL:
-            lexer.next();
-            return ast.createStringLiteral(token.text);
-        case tokens.NUMBER_LITERAL:
-            lexer.next();
-            return ast.createNumberLiteral(token.text);
-        case tokens.OP_LP:
-            lexer.next();
-            var result = this.expr(lexer);
-            token = lexer.next();
-            if (token.id !== tokens.OP_RP) {
-                throw new Error();
-            }
-            return result;
+Parser.prototype.operand = function (lexer, reversePolishNotation) {
+    var token;
+    while (true) {
+        token = lexer.peek();
+        switch (token.id) {
+            case tokens.IDENTIFIER:
+                lexer.next();
+                reversePolishNotation.addValue(ast.createIdentifier(token.text));
+                return;
+            case tokens.NULL_LITERAL:
+                lexer.next();
+                reversePolishNotation.addValue(ast.createValue(null));
+                return;
+            case tokens.BOOLEAN_LITERAL:
+                lexer.next();
+                reversePolishNotation.addValue(ast.createBooleanLiteral(token.text));
+                return;
+            case tokens.STRING_LITERAL:
+                lexer.next();
+                reversePolishNotation.addValue(ast.createStringLiteral(token.text));
+                return;
+            case tokens.NUMBER_LITERAL:
+                lexer.next();
+                reversePolishNotation.addValue(ast.createNumberLiteral(token.text));
+                return;
+            case tokens.OP_LP:
+                lexer.next();
+                reversePolishNotation.addValue(this.expr(lexer));
+                if (!consume(lexer, tokens.OP_RP)) {
+                    throw new Error();
+                }
+                return;
+            case tokens.OP_NOT:
+                lexer.next();
+                reversePolishNotation.addOperator(token, true);
+                continue;
+            case tokens.OP_ADD:
+                lexer.next();
+                token.id = tokens.OP_UNARY_PLUS;
+                reversePolishNotation.addOperator(token, true);
+                continue;
+            case tokens.OP_SUB:
+                lexer.next();
+                token.id = tokens.OP_UNARY_MINUS;
+                reversePolishNotation.addOperator(token, true);
+                continue;
+            case tokens.OP_INC:
+                lexer.next();
+                token.id = tokens.OP_INC_AND_GET;
+                reversePolishNotation.addOperator(token, true);
+                continue;
+            case tokens.OP_DEC:
+                lexer.next();
+                token.id = tokens.OP_DEC_AND_GET;
+                reversePolishNotation.addOperator(token, true);
+                continue;
+        }
+        throw new Error();
     }
-    throw new Error();
 };
 
 module.exports = Parser;

@@ -219,6 +219,58 @@ describe("parser", function () {
             );
         });
 
+        it("unary operators", function () {
+            expect(parser.expression(new Lexer('!a'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_NOT,
+                    'a'
+                ))
+            );
+
+            expect(parser.expression(new Lexer('!abc["def"].test'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_NOT,
+                    op(
+                        tokens.OP_DOT,
+                        op(
+                            tokens.OP_LB,
+                            'abc',
+                            ast.createValue('def')
+                        ),
+                        'test'
+                    )
+                ))
+            );
+
+            expect(parser.expression(new Lexer('++a'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_INC_AND_GET,
+                    'a'
+                ))
+            );
+
+            expect(parser.expression(new Lexer('a++'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_GET_AND_INC,
+                    'a'
+                ))
+            );
+
+            expect(parser.expression(new Lexer('--b'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_DEC_AND_GET,
+                    'b'
+                ))
+            );
+
+            expect(parser.expression(new Lexer('b--'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_GET_AND_DEC,
+                    'b'
+                ))
+            );
+        });
+
         it("binary operators", function () {
             expect(parser.expression(new Lexer("a + b"))).to.be.eql(
                 ast.createExpression(op(
