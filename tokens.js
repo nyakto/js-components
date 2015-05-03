@@ -91,6 +91,13 @@ Object.keys(tokens).forEach(function (name) {
 priority[tokens.OP_DOT] = 18;
 priority[tokens.OP_LB] = 18;
 
+priority[tokens.OP_GET_AND_INC] = 16;
+priority[tokens.OP_GET_AND_DEC] = 16;
+
+priority[tokens.OP_NOT] = 15;
+priority[tokens.OP_INC_AND_GET] = 15;
+priority[tokens.OP_DEC_AND_GET] = 15;
+
 priority[tokens.OP_MUL] = 14;
 priority[tokens.OP_DIV] = 14;
 priority[tokens.OP_EXCESS] = 14;
