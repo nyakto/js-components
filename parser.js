@@ -493,7 +493,7 @@ Parser.prototype.expr = function (lexer) {
         reversePolishNotation.addOperator(token, true);
         token = lexer.peek();
     }
-    if (tokens.isBinaryOperator(token.id) || token.id === tokens.OP_LB) {
+    if (tokens.isBinaryOperator(token.id)) {
         this.exprTail(lexer, reversePolishNotation);
     }
     return reversePolishNotation.convert();
@@ -502,6 +502,7 @@ Parser.prototype.expr = function (lexer) {
 /**
  * expr_tail: <empty>;
  * expr_tail: OP_LB expr OP_RB expr_tail;
+ * expr_tail: OP_LP function_args OP_RP expr_tail;
  * expr_tail: binary_operator operand expr_tail;
  * @param {Lexer} lexer
  * @param {ReversePolishNotation} reversePolishNotation
@@ -509,25 +510,55 @@ Parser.prototype.expr = function (lexer) {
 Parser.prototype.exprTail = function (lexer, reversePolishNotation) {
     var token = lexer.peek();
     while (true) {
-        if (tokens.isBinaryOperator(token.id)) {
-            lexer.next();
-            reversePolishNotation.addOperator(token);
-            this.operand(lexer, reversePolishNotation);
-        } else if (token.id === tokens.OP_LB) {
+        if (token.id === tokens.OP_LB) {
             lexer.next();
             reversePolishNotation.addOperator(token);
             reversePolishNotation.addValue(
                 this.expr(lexer)
             );
-            token = lexer.next();
-            if (token.id !== tokens.OP_RB) {
+            if (!consume(lexer, tokens.OP_RB)) {
                 throw new Error();
             }
+        } else if (token.id === tokens.OP_LP) {
+            lexer.next();
+            reversePolishNotation.addOperator(token);
+            reversePolishNotation.addValue(
+                ast.createValue(
+                    this.functionArgs(lexer)
+                )
+            );
+            if (!consume(lexer, tokens.OP_RP)) {
+                throw new Error();
+            }
+        } else if (tokens.isBinaryOperator(token.id)) {
+            lexer.next();
+            reversePolishNotation.addOperator(token);
+            this.operand(lexer, reversePolishNotation);
         } else {
             return;
         }
         token = lexer.peek();
     }
+};
+
+/**
+ * function_args: <empty>;
+ * function_args: expr (OP_COMMA expr)*;
+ * @param {Lexer} lexer
+ * @returns {Operand[]}
+ */
+Parser.prototype.functionArgs = function (lexer) {
+    var token = lexer.peek();
+    if (token.id === tokens.OP_RP) {
+        return [];
+    }
+    var result = [
+        this.expr(lexer)
+    ];
+    while (consume(lexer, tokens.OP_COMMA)) {
+        result.push(this.expr(lexer));
+    }
+    return result;
 };
 
 /**

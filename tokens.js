@@ -93,6 +93,8 @@ Object.keys(tokens).forEach(function (name) {
 priority[tokens.OP_DOT] = 18;
 priority[tokens.OP_LB] = 18;
 
+priority[tokens.OP_LP] = 17;
+
 priority[tokens.OP_GET_AND_INC] = 16;
 priority[tokens.OP_GET_AND_DEC] = 16;
 
@@ -162,7 +164,8 @@ rightAssoc[tokens.OP_BINARY_OR_ASSIGN] = true;
 rightAssoc[tokens.OP_XOR_ASSIGN] = true;
 
 binary[tokens.OP_DOT] = true;
-binary[tokens.OP_COMMA] = true;
+binary[tokens.OP_LP] = true;
+binary[tokens.OP_LB] = true;
 binary[tokens.OP_MUL] = true;
 binary[tokens.OP_DIV] = true;
 binary[tokens.OP_EXCESS] = true;

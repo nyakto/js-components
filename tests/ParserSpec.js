@@ -311,6 +311,37 @@ describe("parser", function () {
                     ast.createIdentifier('text')
                 ))
             );
+
+            expect(parser.expression(new Lexer('doSomething()'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_LP,
+                    'doSomething',
+                    ast.createValue([
+                    ])
+                ))
+            );
+
+            expect(parser.expression(new Lexer('trigger("someEvent")'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_LP,
+                    'trigger',
+                    ast.createValue([
+                        ast.createValue('someEvent')
+                    ])
+                ))
+            );
+
+            expect(parser.expression(new Lexer('fn(a, 10, "20")'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_LP,
+                    'fn',
+                    ast.createValue([
+                        ast.createIdentifier('a'),
+                        ast.createValue(10),
+                        ast.createValue('20')
+                    ])
+                ))
+            );
         });
     });
 });
