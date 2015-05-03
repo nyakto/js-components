@@ -256,16 +256,16 @@ describe("parser", function () {
                 ))
             );
 
-            expect(parser.expression(new Lexer('--a'))).to.be.eql(
+            expect(parser.expression(new Lexer('--b'))).to.be.eql(
                 ast.createExpression(op(
-                    tokens.OP_INC_AND_GET,
+                    tokens.OP_DEC_AND_GET,
                     'b'
                 ))
             );
 
-            expect(parser.expression(new Lexer('a--'))).to.be.eql(
+            expect(parser.expression(new Lexer('b--'))).to.be.eql(
                 ast.createExpression(op(
-                    tokens.OP_GET_AND_INC,
+                    tokens.OP_GET_AND_DEC,
                     'b'
                 ))
             );
