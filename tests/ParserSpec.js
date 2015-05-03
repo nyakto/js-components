@@ -312,6 +312,15 @@ describe("parser", function () {
                 ))
             );
 
+            expect(parser.expression(new Lexer('doSomething()'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_LP,
+                    'doSomething',
+                    ast.createValue([
+                    ])
+                ))
+            );
+
             expect(parser.expression(new Lexer('trigger("someEvent")'))).to.be.eql(
                 ast.createExpression(op(
                     tokens.OP_LP,
