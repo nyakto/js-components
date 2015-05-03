@@ -31,7 +31,7 @@ var ast = require('./ast');
 /**
  * @param {Lexer} lexer
  * @param {number} id
- * @returns {boolean|object}
+ * @returns {boolean|Token}
  */
 function consume(lexer, id) {
     var token = lexer.peek();
@@ -325,14 +325,20 @@ Parser.prototype.tagOptionalDescription = function (lexer, tag) {
  */
 Parser.prototype.tagClassList = function (lexer, tag) {
     var token = lexer.peek();
+    var condition;
     while (token.id === tokens.CLASS_START) {
         lexer.next();
-        token = lexer.next();
-        if (token.id !== tokens.WORD) {
+        if (!(token = consume(lexer, tokens.WORD))) {
             throw new Error();
         }
-        tag.addClass(token.text);
-        // TODO: условные выражения для классов .visible(a + b > 100)
+        condition = true;
+        if (consume(lexer, tokens.OP_LP)) {
+            condition = this.expression(lexer);
+            if (!consume(lexer, tokens.OP_RP)) {
+                throw new Error();
+            }
+        }
+        tag.addClass(token.text, condition);
         token = lexer.peek();
     }
 };
