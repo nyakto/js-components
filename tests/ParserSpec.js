@@ -76,6 +76,26 @@ describe("parser", function () {
             ]);
         });
 
+        it("supports event bindings", function () {
+            expect(parser.template(new Lexer('input\n@on:change(value) trigger("valueChanged", value)'))).to.be.eql([
+                ast.createTag('input')
+                    .addEventBinding(ast.createEventBinding(
+                        'change',
+                        ['value'],
+                        ast.createExpression(
+                            ast.createBinaryOperator(
+                                tokens.OP_LP,
+                                ast.createIdentifier('trigger'),
+                                ast.createValue([
+                                    ast.createValue('valueChanged'),
+                                    ast.createIdentifier('value')
+                                ])
+                            )
+                        )
+                    ))
+            ]);
+        });
+
         it("supports expressions", function () {
             expect(parser.template(new Lexer('.class-a= a + b\n\t|some text\n\t= c - d'))).to.be.eql([
                 ast.createTag()
