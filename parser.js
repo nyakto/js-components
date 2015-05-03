@@ -528,6 +528,7 @@ Parser.prototype.exprTail = function (lexer, reversePolishNotation) {
  * operand: BOOLEAN_LITERAL;
  * operand: STRING_LITERAL;
  * operand: NUMBER_LITERAL;
+ * operand: OP_NOT operand;
  * @param {Lexer} lexer
  * @returns {Operand}
  */
@@ -557,6 +558,12 @@ Parser.prototype.operand = function (lexer) {
                 throw new Error();
             }
             return result;
+        case tokens.OP_NOT:
+            lexer.next();
+            return ast.createUnaryOperator(
+                token.id,
+                this.operand(lexer)
+            );
     }
     throw new Error();
 };
