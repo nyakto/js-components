@@ -226,6 +226,34 @@ describe("parser", function () {
                     'a'
                 ))
             );
+
+            expect(parser.expression(new Lexer('++a'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_INC_AND_GET,
+                    'a'
+                ))
+            );
+
+            expect(parser.expression(new Lexer('a++'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_GET_AND_INC,
+                    'a'
+                ))
+            );
+
+            expect(parser.expression(new Lexer('--a'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_INC_AND_GET,
+                    'b'
+                ))
+            );
+
+            expect(parser.expression(new Lexer('a--'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_GET_AND_INC,
+                    'b'
+                ))
+            );
         });
 
         it("binary operators", function () {
