@@ -428,41 +428,73 @@ Parser.prototype.tagContent = function (lexer, tag) {
 Parser.prototype.attributesList = function (lexer, tag) {
     var token = lexer.peek();
     while (token.id === tokens.ATTR_START) {
-        tag.addAttribute(this.attribute(lexer));
+        this.attribute(lexer, tag);
         token = lexer.peek();
     }
 };
 
 /**
  * // TODO: conditional attributes (@checked(isChecked))
- * attribute: ATTR_START WORD optional_attribute_value LF?;
+ * attribute: tag_attribute;
+ * attribute: event_binding;
+ * tag_attribute: ATTR_START WORD optional_attribute_value LF?;
+ * event_binding: ATTR_START WORD[^on:] event_binding_args WHITESPACE expression LF?;
  * optional_attribute_value: <empty>;
  * optional_attribute_value: WHITESPACE expression;
+ * event_binding_args: <empty>;
+ * event_binding_args: OP_LP WHITESPACE? (WORD WHITESPACE? (OP_COMMA WHITESPACE? WORD WHITESPACE?)*)? OP_RP;
  * @param {Lexer} lexer
- * @returns {Attribute}
+ * @param {TagStatement} tag
  */
-Parser.prototype.attribute = function (lexer) {
-    var token = lexer.next();
-    if (token.id !== tokens.ATTR_START) {
+Parser.prototype.attribute = function (lexer, tag) {
+    if (!consume(lexer, tokens.ATTR_START)) {
         throw new Error();
     }
-    token = lexer.next();
-    if (token.id !== tokens.WORD) {
+    var token = consume(lexer, tokens.WORD);
+    if (!token) {
         throw new Error();
     }
     var name = token.text;
-    var value;
-    token = lexer.peek();
-    if (token.id === tokens.WHITESPACE) {
-        lexer.next();
-        value = this.expression(lexer);
+    if (name.substr(0, 3) === 'on:') {
+        name = name.substr(3);
+        var args = [];
+        if (consume(lexer, tokens.OP_LP)) {
+            consume(lexer, tokens.WHITESPACE);
+            token = consume(lexer, tokens.WORD);
+            if (token) {
+                args.push(token.text);
+                consume(lexer, tokens.WHITESPACE);
+                while (consume(lexer, tokens.OP_COMMA)) {
+                    consume(lexer, tokens.WHITESPACE);
+                    token = consume(lexer, tokens.WORD);
+                    if (!token) {
+                        throw new Error();
+                    }
+                    args.push(token.text);
+                    consume(lexer, tokens.WHITESPACE);
+                }
+            }
+            if (!consume(lexer, tokens.OP_RP)) {
+                throw new Error();
+            }
+        }
+        if (!consume(lexer, tokens.WHITESPACE)) {
+            throw new Error();
+        }
+        var action = this.expression(lexer);
+        tag.addEventBinding(ast.createEventBinding(name, args, action));
     } else {
-        value = ast.createExpression(
-            ast.createValue(true)
-        );
+        var value;
+        if (consume(lexer, tokens.WHITESPACE)) {
+            value = this.expression(lexer);
+        } else {
+            value = ast.createExpression(
+                ast.createValue(true)
+            );
+        }
+        consume(lexer, tokens.LF);
+        tag.addAttribute(ast.createAttribute(name, value));
     }
-    consume(lexer, tokens.LF);
-    return ast.createAttribute(name, value);
 };
 
 /**

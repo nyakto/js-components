@@ -14,6 +14,7 @@ function Statement() {
  * @property {Object.<string, (boolean|ExpressionStatement)>} classes className -> expression
  * @property {string} id
  * @property {Attribute[]} attributes
+ * @property {EventBinding[]} eventBindings
  * @property {Statement[]} content
  */
 function TagStatement(tagName) {
@@ -21,6 +22,7 @@ function TagStatement(tagName) {
     this.classes = {};
     this.id = null;
     this.attributes = [];
+    this.eventBindings = [];
     this.content = [];
 }
 util.inherits(TagStatement, Statement);
@@ -55,9 +57,19 @@ TagStatement.prototype.setId = function (id) {
 
 /**
  * @param {Attribute} attribute
+ * @returns {TagStatement}
  */
 TagStatement.prototype.addAttribute = function (attribute) {
     this.attributes.push(attribute);
+    return this;
+};
+
+/**
+ * @param {EventBinding} eventBinding
+ * @returns {TagStatement}
+ */
+TagStatement.prototype.addEventBinding = function (eventBinding) {
+    this.eventBindings.push(eventBinding);
     return this;
 };
 
@@ -169,6 +181,21 @@ EachStatement.prototype.setContent = function (content) {
 function Attribute(name, value) {
     this.name = typeof name !== 'undefined' ? String(name) : null;
     this.value = typeof value !== 'undefined' ? value : null;
+}
+
+/**
+ * @constructor
+ * @property {string} name
+ * @property {string[]} args
+ * @property {ExpressionStatement} action
+ * @param {string} name
+ * @param {string[]} args
+ * @param {ExpressionStatement} action
+ */
+function EventBinding(name, args, action) {
+    this.name = name;
+    this.args = args;
+    this.action = action;
 }
 
 /**
@@ -466,5 +493,15 @@ module.exports = {
      */
     createAttribute: function (name, value) {
         return new Attribute(name, value);
+    },
+
+    /**
+     * @param {string} name
+     * @param {string[]} args
+     * @param {ExpressionStatement} action
+     * @returns {EventBinding}
+     */
+    createEventBinding: function (name, args, action) {
+        return new EventBinding(name, args, action);
     }
 };
