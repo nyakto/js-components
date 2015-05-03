@@ -227,6 +227,21 @@ describe("parser", function () {
                 ))
             );
 
+            expect(parser.expression(new Lexer('!abc["def"].test'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_NOT,
+                    op(
+                        tokens.OP_DOT,
+                        op(
+                            tokens.OP_LB,
+                            'abc',
+                            ast.createValue('def')
+                        ),
+                        'test'
+                    )
+                ))
+            );
+
             expect(parser.expression(new Lexer('++a'))).to.be.eql(
                 ast.createExpression(op(
                     tokens.OP_INC_AND_GET,
