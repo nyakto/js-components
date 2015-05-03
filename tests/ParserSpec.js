@@ -219,6 +219,15 @@ describe("parser", function () {
             );
         });
 
+        it("unary operators", function () {
+            expect(parser.expression(new Lexer('!a'))).to.be.eql(
+                ast.createExpression(op(
+                    tokens.OP_NOT,
+                    'a'
+                ))
+            );
+        });
+
         it("binary operators", function () {
             expect(parser.expression(new Lexer("a + b"))).to.be.eql(
                 ast.createExpression(op(
