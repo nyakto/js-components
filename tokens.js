@@ -51,6 +51,8 @@ var tokens = {
     OP_BINARY_OR: idCounter++,
     OP_XOR: idCounter++,
     OP_NOT: idCounter++,
+    OP_UNARY_PLUS: idCounter++,
+    OP_UNARY_MINUS: idCounter++,
     OP_LOGICAL_AND: idCounter++,
     OP_LOGICAL_OR: idCounter++,
     OP_TERNARY_IF: idCounter++,
