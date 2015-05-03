@@ -183,7 +183,7 @@ EachStatement.prototype.setContent = function (content) {
 function Attribute(name, value, condition) {
     this.name = name;
     this.value = value;
-    this.condition = condition;
+    this.condition = typeof condition !== 'undefined' ? condition : null;
 }
 
 /**
