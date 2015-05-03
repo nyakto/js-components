@@ -434,11 +434,12 @@ Parser.prototype.attributesList = function (lexer, tag) {
 };
 
 /**
- * // TODO: conditional attributes (@checked(isChecked))
  * attribute: tag_attribute;
  * attribute: event_binding;
- * tag_attribute: ATTR_START WORD optional_attribute_value LF?;
+ * tag_attribute: ATTR_START WORD optional_attribute_condition optional_attribute_value LF?;
  * event_binding: ATTR_START WORD[^on:] event_binding_args WHITESPACE expression LF?;
+ * optional_attribute_condition: <empty>;
+ * optional_attribute_condition: OP_LP expression OP_RP;
  * optional_attribute_value: <empty>;
  * optional_attribute_value: WHITESPACE expression;
  * event_binding_args: <empty>;
@@ -484,6 +485,13 @@ Parser.prototype.attribute = function (lexer, tag) {
         var action = this.expression(lexer);
         tag.addEventBinding(ast.createEventBinding(name, args, action));
     } else {
+        var condition = null;
+        if (consume(lexer, tokens.OP_LP)) {
+            condition = this.expression(lexer);
+            if (!consume(lexer, tokens.OP_RP)) {
+                throw new Error();
+            }
+        }
         var value;
         if (consume(lexer, tokens.WHITESPACE)) {
             value = this.expression(lexer);
@@ -493,7 +501,7 @@ Parser.prototype.attribute = function (lexer, tag) {
             );
         }
         consume(lexer, tokens.LF);
-        tag.addAttribute(ast.createAttribute(name, value));
+        tag.addAttribute(ast.createAttribute(name, value, condition));
     }
 };
 

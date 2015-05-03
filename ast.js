@@ -175,12 +175,15 @@ EachStatement.prototype.setContent = function (content) {
  * @constructor
  * @property {string} name
  * @property {ExpressionStatement} value
+ * @property {ExpressionStatement} condition
  * @param {string} name
  * @param {ExpressionStatement} value
+ * @param {ExpressionStatement} [condition]
  */
-function Attribute(name, value) {
-    this.name = typeof name !== 'undefined' ? String(name) : null;
-    this.value = typeof value !== 'undefined' ? value : null;
+function Attribute(name, value, condition) {
+    this.name = name;
+    this.value = value;
+    this.condition = typeof condition !== 'undefined' ? condition : null;
 }
 
 /**
@@ -489,10 +492,11 @@ module.exports = {
     /**
      * @param {string} name
      * @param {ExpressionStatement} value
+     * @param {ExpressionStatement} [condition]
      * @returns {Attribute}
      */
-    createAttribute: function (name, value) {
-        return new Attribute(name, value);
+    createAttribute: function (name, value, condition) {
+        return new Attribute(name, value, condition);
     },
 
     /**
