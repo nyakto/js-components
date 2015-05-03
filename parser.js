@@ -2,19 +2,6 @@ var Lexer = require('./lexer');
 var tokens = require('./tokens');
 var ast = require('./ast');
 
-// TODO: CSS для классов компонента должны переименовываться в уникальные названия классов (.some-class { /* ... */ } -> .login_form_some-class { /* ... */ })
-// TODO: CSS для тегов компонента должен превращаться в CSS с классами (form { /* ... */ } -> .login_form_tag_form { /* ... */ })
-// TODO: CSS для идентификаторов должен превращаться в CSS с классами (#username { /* ... */ } -> .login_form_id_username { /* ... */ })
-// TODO: режим минификации / обфускации CSS классов
-// TODO: написание стилей в формате LESS (с наследованием переменных и прочими плюшками)
-// TODO: для вставки HTML нужно использовать функцию html(): div= html(safeHtml)
-// TODO: для объединения текста и HTML нужно использовать функцию concat(): div= concat("<html>", html(someHtml), "</html>")
-// TODO: у компонента должен быть метод update() для принудительного обновления представления
-// TODO: компонент автоматически обновляет представление после изменения опций, которые он может отследить (asap)
-// TODO: улучшенная поддержка событий (@on:change - будет вызываться сразу при изменении value у input, а не после смены фокуса)
-// TODO: для полей компонента должны генерироваться getter / setter (this.setValue('qwe asd'), this.getValue()) + универсальный ( this.set('value', 'qwe asd'), this.get('value'))
-// TODO: поддержка "тем оформления"
-
 /**
  * @param {Lexer} lexer
  * @param {number} id
