@@ -36,10 +36,11 @@ TagStatement.prototype.setTagName = function (tagName) {
 
 /**
  * @param {string} className
+ * @param {ExpressionStatement} [condition]
  * @returns {TagStatement}
  */
-TagStatement.prototype.addClass = function (className) {
-    this.classes[className] = true;
+TagStatement.prototype.addClass = function (className, condition) {
+    this.classes[className] = typeof condition === 'undefined' ? true : condition;
     return this;
 };
 
