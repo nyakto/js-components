@@ -208,6 +208,23 @@ describe("parser", function () {
                     .setElseContent([])
             ]);
         });
+
+        it("supports complex templates", function () {
+            var complexTemplate = 'form\n' +
+                '\t@method "POST"\n' +
+                '\t@action "/login"\n' +
+                '\tinput.correct(isCorrectUsername)#username\n' +
+                '\t\t@on:change(value) isCorrectUsername = validateUsername(value)\n' +
+                '\tinput.correct(isCorrectPassword)#password\n' +
+                '\t\t@on:change(value) isCorrectPassword = validatePassword(value)\n' +
+                '\tbutton Login\n' +
+                '\t\t@disabled !isCorrectUsername || !isCorrectPassword\n' +
+                '\t\t@on:click trigger("login", username.getValue(), password.getValue())';
+
+            expect(parser.template(new Lexer(complexTemplate))).to.be.eql([
+
+            ]);
+        });
     });
 
     describe("expressions", function () {

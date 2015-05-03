@@ -2,19 +2,6 @@ var Lexer = require('./lexer');
 var tokens = require('./tokens');
 var ast = require('./ast');
 
-/*
- form
- @method "POST"
- @action "/login"
- input.correct(correctUsername)#username
- @on:change(value) validateUsername(value)
- input.correct(correctPassword)#password
- @on:change(value) validatePassword(value)
- button Login
- @disabled !canSubmit
- @on:click "submit"
- */
-
 // TODO: CSS для классов компонента должны переименовываться в уникальные названия классов (.some-class { /* ... */ } -> .login_form_some-class { /* ... */ })
 // TODO: CSS для тегов компонента должен превращаться в CSS с классами (form { /* ... */ } -> .login_form_tag_form { /* ... */ })
 // TODO: CSS для идентификаторов должен превращаться в CSS с классами (#username { /* ... */ } -> .login_form_id_username { /* ... */ })
