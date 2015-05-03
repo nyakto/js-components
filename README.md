@@ -11,9 +11,9 @@ object model for abstraction from DOM / HTML
 
 ## TODO: Features
 
-1. CSS: unique class names for component classes (```css .some-class { /* ... */ }``` -> ```css .login_form_class_some-class { /* ... */ }```)
-2. CSS: unique class names for component tags (```css form { /* ... */ }``` -> ```css .login_form_tag_form { /* ... */ }```)
-3. CSS: unique class names for component IDs (```css #username { /* ... */ }``` -> ```css .login_form_id_username { /* ... */ }```)
+1. CSS: unique class names for component classes (```.some-class { /* ... */ }``` -> ```.login_form_class_some-class { /* ... */ }```)
+2. CSS: unique class names for component tags (```form { /* ... */ }``` -> ```.login_form_tag_form { /* ... */ }```)
+3. CSS: unique class names for component IDs (```#username { /* ... */ }``` -> ```.login_form_id_username { /* ... */ }```)
 4. CSS: obfuscation / minification for classes (```.login_form_class_some-class``` -> ```.q9```)
 5. CSS: LESS support
 6. safe HTML via function call (```div = html(someHtml)```)
