@@ -470,6 +470,7 @@ Parser.prototype.attribute = function (lexer, tag) {
             throw new Error();
         }
         var action = this.expression(lexer);
+        consume(lexer, tokens.LF);
         tag.addEventBinding(ast.createEventBinding(name, args, action));
     } else {
         var condition = null;
