@@ -26,6 +26,18 @@ describe("parser", function () {
                     .setId('submit')
                     .addContent(ast.createText('Do some great things!'))
             );
+
+            expect(parser.template(new Lexer('input.correct(hasCorrectData()).pretty'))).to.be.eql([
+                ast.createTag('input')
+                    .addClass('correct', ast.createExpression(
+                        ast.createBinaryOperator(
+                            tokens.OP_LP,
+                            ast.createIdentifier('hasCorrectData'),
+                            ast.createValue([])
+                        )
+                    ))
+                    .addClass('pretty')
+            ]);
         });
 
         it("text statements", function () {
