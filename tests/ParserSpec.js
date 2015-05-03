@@ -317,7 +317,7 @@ describe("parser", function () {
                     tokens.OP_LP,
                     'trigger',
                     ast.createValue([
-                        'someEvent'
+                        ast.createValue('someEvent')
                     ])
                 ))
             );
